@@ -1,8 +1,8 @@
-streamlit as st
+streamlit
 cv2
 time
 PIL
 numpy
-email.message
+email
 ssl
 smtplib
