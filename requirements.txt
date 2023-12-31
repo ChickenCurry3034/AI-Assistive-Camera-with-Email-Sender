@@ -1,1 +1,8 @@
-opencv-python
+streamlit as st
+cv2
+time
+PIL
+numpy
+email.message
+ssl
+smtplib
