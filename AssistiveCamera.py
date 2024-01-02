@@ -6,9 +6,11 @@ import numpy as np
 from email.message import EmailMessage
 import ssl
 import smtplib
+from email.mime.text import MIMEText
 
 cap = cv2.VideoCapture(0)
 
+st.title("AI Assistive Camera")
 frameST = st.empty()
 
 #Initializing the face and eye cascade classifiers from xml files
@@ -26,9 +28,16 @@ camClick = frameST1.button('Ready to Take Picture!')
 
 check = False
 
-contrast = st.sidebar.slider("Contrast", 0, 10)
-brightness = st.sidebar.slider("Brightness",0,100)
+contrast = st.sidebar.slider("Contrast", 0.0, 10.0, 1.0, 0.1)
+brightness = st.sidebar.slider("Brightness",0,100,5,1)
 graychecker = st.sidebar.checkbox('Grayscale?')
+
+email_password = st.sidebar.text_input('What is your app password?',type="password")
+email_receiver = st.sidebar.text_input('Which email is this going to?')
+subject = st.sidebar.text_input('Insert Subject')
+body = st.sidebar.text_input('Insert Body')
+
+st.sidebar.markdown("Aarush Mane | Class of 2026 | CS-Fair 2024")
 
 while(check == False):
         ret,img = cap.read()
@@ -84,20 +93,18 @@ while(check == False):
                 frameST.image(out,channels="BGR")
 
 ret,img = cap.read()
-frameST.image(out, channels="BGR")
+if(graychecker):
+        frameST.image(out)
+else:
+        out = cv2.cvtColor(out, cv2.COLOR_BGR2RGB)
+        frameST.image(out)
 frameST1.empty()
-
-email_password = st.text_input('What is your app password?',type="password")
-email_receiver = st.text_input('Which email is this going to?')
-subject = st.text_input('Insert Subject')
-body = st.text_input('Insert Body')
-send_mail = st.button('Send Email')
-if send_mail:
+if (check==True):
         em=EmailMessage()
         em['From']='aarushmane@gmail.com'
         em['To']=email_receiver
         em['subject']=subject
-        em.set_content(body)
+        em.set_content(MIMEText("""<html><body><p>"""+body+"""</p><img src="out" alt="Generated Image"></body></html>""","html"))
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL('smtp.gmail.com',465,context=context) as smtp:
                 smtp.login('aarushmane@gmail.com',email_password)
